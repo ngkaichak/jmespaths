@@ -1,11 +1,14 @@
 import operator
+from numbers import Number
 
 from jmespath import functions
 from jmespath.compat import string_type
-from numbers import Number
+from jmespath.plum import Plum
 
 
 def _equals(x, y):
+    x = x.peach()if isinstance(x, Plum) else x
+    y = y.peach()if isinstance(y, Plum) else y
     if _is_special_number_case(x, y):
         return False
     else:
@@ -58,6 +61,7 @@ def _is_actual_number(x):
 
 class Options(object):
     """Options to control how a JMESPath function is evaluated."""
+
     def __init__(self, dict_cls=None, custom_functions=None):
         #: The class to use when creating a dict.  The interpreter
         #  may create dictionaries during the evaluation of a JMESPath
@@ -133,9 +137,12 @@ class TreeInterpreter(Visitor):
 
     def visit_field(self, node, value):
         try:
-            return value.get(node['value'])
+            result = value.plum(node['value'])
         except AttributeError:
             return None
+        if not isinstance(result, (list, dict)):
+            result = Plum(node['value'], value)
+        return result
 
     def visit_comparator(self, node, value):
         # Common case: comparator is == or !=
@@ -176,11 +183,14 @@ class TreeInterpreter(Visitor):
             return None
         comparator_node = node['children'][2]
         collected = []
-        for element in base:
+        for i, element in enumerate(base):
             if self._is_true(self.visit(comparator_node, element)):
                 current = self.visit(node['children'][1], element)
                 if current is not None:
-                    collected.append(current)
+                    if not isinstance(current, (list, dict)):
+                        collected.append(Plum(i, base))
+                    else:
+                        collected.append(current)
         return collected
 
     def visit_flatten(self, node, value):
@@ -189,11 +199,18 @@ class TreeInterpreter(Visitor):
             # Can't flatten the object if it's not a list.
             return None
         merged_list = []
-        for element in base:
+        for i, element in enumerate(base):
             if isinstance(element, list):
-                merged_list.extend(element)
+                for j, e in enumerate(element):
+                    if isinstance(e, (list, dict)):
+                        merged_list.append(e)
+                    else:
+                        merged_list.append(Plum(j, element))
             else:
-                merged_list.append(element)
+                if isinstance(element, (list, dict)):
+                    merged_list.append(element)
+                else:
+                    merged_list.append(Plum(i, base))
         return merged_list
 
     def visit_identity(self, node, value):
@@ -205,9 +222,12 @@ class TreeInterpreter(Visitor):
         if not isinstance(value, list):
             return None
         try:
-            return value[node['value']]
+            result = value[node['value']]
         except IndexError:
             return None
+        if not isinstance(result, (list, dict)):
+            result = Plum(node['value'], value)
+        return result
 
     def visit_index_expression(self, node, value):
         result = value
@@ -218,8 +238,13 @@ class TreeInterpreter(Visitor):
     def visit_slice(self, node, value):
         if not isinstance(value, list):
             return None
-        s = slice(*node['children'])
-        return value[s]
+        start, stop, step = node['children']
+        start = start or 0
+        stop = stop or len(value)
+        step = step or 1
+        result = [value[i] if isinstance(value[i], (list, dict)) else
+                  Plum(i, value)for i in range(start, stop, step)]
+        return result
 
     def visit_key_val_pair(self, node, value):
         return self.visit(node['children'][0], value)

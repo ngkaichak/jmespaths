@@ -1,10 +1,10 @@
-import math
 import json
+import math
 
 from jmespath import exceptions
-from jmespath.compat import string_type as STRING_TYPE
 from jmespath.compat import get_methods
-
+from jmespath.compat import string_type as STRING_TYPE
+from jmespath.plum import Plum
 
 # python types -> jmespath types
 TYPES_MAP = {
@@ -349,13 +349,14 @@ class Functions(metaclass=FunctionRegistry):
     def _create_key_func(self, expref, allowed_types, function_name):
         def keyfunc(x):
             result = expref.visit(expref.expression, x)
-            actual_typename = type(result).__name__
+            actual_typename = type(result.peach() if isinstance(
+                result, Plum) else result).__name__
             jmespath_type = self._convert_to_jmespath_type(actual_typename)
             # allowed_types is in term of jmespath types, not python types.
             if jmespath_type not in allowed_types:
                 raise exceptions.JMESPathTypeError(
                     function_name, result, jmespath_type, allowed_types)
-            return result
+            return result.peach() if isinstance(result, Plum)else result
         return keyfunc
 
     def _convert_to_jmespath_type(self, pyobject):

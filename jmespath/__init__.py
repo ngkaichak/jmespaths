@@ -10,3 +10,7 @@ def compile(expression):
 
 def search(expression, data, options=None):
     return parser.Parser().parse(expression).search(data, options=options)
+
+
+def replace(expression, data, *args, options=None):
+    return parser.Parser().parse(expression).replace(data, *args, options=options)

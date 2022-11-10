@@ -27,11 +27,9 @@ A few notes on the implementation.
 """
 import random
 
-from jmespath import lexer
+from jmespath import ast, exceptions, lexer, visitor
 from jmespath.compat import with_repr_method
-from jmespath import ast
-from jmespath import exceptions
-from jmespath import visitor
+from jmespath.plum import Plum
 
 
 class Parser(object):
@@ -505,6 +503,28 @@ class ParsedResult(object):
         self.parsed = parsed
 
     def search(self, value, options=None):
+        return self.search_or_replace(value, options=options)
+
+    def replace(self, value, *args, options=None):
+        return self.search_or_replace(value, *args, options=options)
+
+    def search_or_replace(self, value, *args, options=None):
+        result = self._search(value, options=options)
+        result = self.plum_for_peach(result, *args)
+        return True if args else result
+
+    def plum_for_peach(self, value, *args):
+        if isinstance(value, Plum):
+            value = value.plum(args[0]) if args else value.peach()
+        elif isinstance(value, list):
+            for i, tem in enumerate(value):
+                value[i] = self.plum_for_peach(tem, *args)
+        elif isinstance(value, dict):
+            for k, v in value.items():
+                value[k] = self.plum_for_peach(v, *args)
+        return value
+
+    def _search(self, value, options=None):
         interpreter = visitor.TreeInterpreter(options)
         result = interpreter.visit(self.parsed, value)
         return result
