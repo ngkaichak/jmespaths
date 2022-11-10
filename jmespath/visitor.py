@@ -137,7 +137,7 @@ class TreeInterpreter(Visitor):
 
     def visit_field(self, node, value):
         try:
-            result = value.plum(node['value'])
+            result = value.get(node['value'])
         except AttributeError:
             return None
         if not isinstance(result, (list, dict)):
