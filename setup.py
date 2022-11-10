@@ -4,9 +4,9 @@ import io
 
 from setuptools import setup, find_packages
 
-
 setup(
-    name='jmespath',
+    #name='jmespath',
+    name='jmespaths',
     version='1.0.1',
     description='JSON Matching Expressions',
     long_description=io.open('README.rst', encoding='utf-8').read(),
