@@ -16,8 +16,8 @@ import timeit
 _clock = timeit.default_timer
 
 
-from jmespath.parser import Parser
-from jmespath.lexer import Lexer
+from jmespaths.parser import Parser
+from jmespaths.lexer import Lexer
 
 
 BENCHMARK_FILE = os.path.join(

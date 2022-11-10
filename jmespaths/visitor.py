@@ -1,9 +1,9 @@
 import operator
 from numbers import Number
 
-from jmespath import functions
-from jmespath.compat import string_type
-from jmespath.plum import Plum
+from jmespaths import functions
+from jmespaths.compat import string_type
+from jmespaths.plum import Plum
 
 
 def _equals(x, y):

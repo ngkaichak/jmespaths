@@ -1,10 +1,10 @@
 import json
 import math
 
-from jmespath import exceptions
-from jmespath.compat import get_methods
-from jmespath.compat import string_type as STRING_TYPE
-from jmespath.plum import Plum
+from jmespaths import exceptions
+from jmespaths.compat import get_methods
+from jmespaths.compat import string_type as STRING_TYPE
+from jmespaths.plum import Plum
 
 # python types -> jmespath types
 TYPES_MAP = {

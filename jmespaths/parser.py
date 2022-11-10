@@ -27,9 +27,9 @@ A few notes on the implementation.
 """
 import random
 
-from jmespath import ast, exceptions, lexer, visitor
-from jmespath.compat import with_repr_method
-from jmespath.plum import Plum
+from jmespaths import ast, exceptions, lexer, visitor
+from jmespaths.compat import with_repr_method
+from jmespaths.plum import Plum
 
 
 class Parser(object):
