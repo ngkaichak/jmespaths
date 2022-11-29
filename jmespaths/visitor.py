@@ -187,7 +187,7 @@ class TreeInterpreter(Visitor):
             if self._is_true(self.visit(comparator_node, element)):
                 current = self.visit(node['children'][1], element)
                 if current is not None:
-                    if not isinstance(current, (list, dict)):
+                    if not isinstance(current, (list, dict, Plum)):
                         collected.append(Plum(i, base))
                     else:
                         collected.append(current)
