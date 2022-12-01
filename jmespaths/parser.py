@@ -522,6 +522,8 @@ class ParsedResult(object):
         elif isinstance(value, dict):
             for k, v in value.items():
                 value[k] = self.plum_for_peach(v, *args)
+        while isinstance(value, Plum):
+            value = value.peach()
         return value
 
     def _search(self, value, options=None):
