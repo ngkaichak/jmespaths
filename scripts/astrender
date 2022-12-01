@@ -8,8 +8,8 @@ import shutil
 import webbrowser
 from subprocess import check_call, call, PIPE
 
-import jmespath
-import jmespath.exceptions
+import jmespaths
+import jmespaths.exceptions
 
 
 def verify_preconditions():
@@ -31,8 +31,8 @@ def main():
                         'and immediately deleted after displaying the AST.')
     args = parser.parse_args()
     try:
-        parsed = jmespath.compile(args.expression)
-    except jmespath.exceptions.JMESPathError as e:
+        parsed = jmespaths.compile(args.expression)
+    except jmespaths.exceptions.JMESPathError as e:
         sys.stderr.write("Invalid expressions: %s\n" % e)
         return 1
     with tempfile.NamedTemporaryFile('w') as f:

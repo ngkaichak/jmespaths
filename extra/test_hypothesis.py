@@ -8,10 +8,10 @@ import numbers
 from hypothesis import given, settings, assume, HealthCheck
 import hypothesis.strategies as st
 
-from jmespath import lexer
-from jmespath import parser
-from jmespath import exceptions
-from jmespath.functions import Functions
+from jmespaths import lexer
+from jmespaths import parser
+from jmespaths import exceptions
+from jmespaths.functions import Functions
 
 
 JSON_NUMBERS = (st.integers() | st.floats(allow_nan=False,

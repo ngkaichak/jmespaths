@@ -5,7 +5,7 @@ from subprocess import check_call
 
 def main():
     check_call('git submodule update', shell=True)
-    check_call('cp -r jmespath.test/tests/* tests/compliance/', shell=True)
+    check_call('cp -r jmespaths.test/tests/* tests/compliance/', shell=True)
 
 
 if __name__ == '__main__':

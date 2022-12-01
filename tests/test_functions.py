@@ -3,8 +3,8 @@ from tests import unittest
 from datetime import datetime, timedelta
 import json
 
-import jmespath
-from jmespath import exceptions
+import jmespaths
+from jmespaths import exceptions
 
 
 class TestFunctions(unittest.TestCase):
@@ -15,12 +15,12 @@ class TestFunctions(unittest.TestCase):
         # ability that ``to_string`` will always default to str()'ing values it
         # doesn't understand.
         data = [datetime.now(), datetime.now() + timedelta(seconds=1)]
-        result = jmespath.search('max([*].to_string(@))', data)
+        result = jmespaths.search('max([*].to_string(@))', data)
         self.assertEqual(json.loads(result), str(data[-1]))
 
     def test_type_error_messages(self):
         with self.assertRaises(exceptions.JMESPathTypeError) as e:
-            jmespath.search('length(@)', 2)
+            jmespaths.search('length(@)', 2)
         exception = e.exception
         # 1. Function name should be in error message
         self.assertIn('length()', str(exception))
@@ -34,7 +34,7 @@ class TestFunctions(unittest.TestCase):
 
     def test_singular_in_error_message(self):
         with self.assertRaises(exceptions.ArityError) as e:
-            jmespath.search('length(@, @)', [0, 1])
+            jmespaths.search('length(@, @)', [0, 1])
         exception = e.exception
         self.assertEqual(
             str(exception),
@@ -42,7 +42,7 @@ class TestFunctions(unittest.TestCase):
 
     def test_error_message_is_pluralized(self):
         with self.assertRaises(exceptions.ArityError) as e:
-            jmespath.search('sort_by(@)', [0, 1])
+            jmespaths.search('sort_by(@)', [0, 1])
         exception = e.exception
         self.assertEqual(
             str(exception),
@@ -50,7 +50,7 @@ class TestFunctions(unittest.TestCase):
 
     def test_variadic_is_pluralized(self):
         with self.assertRaises(exceptions.VariadictArityError) as e:
-            jmespath.search('not_null()', 'foo')
+            jmespaths.search('not_null()', 'foo')
         exception = e.exception
         self.assertEqual(
             str(exception),

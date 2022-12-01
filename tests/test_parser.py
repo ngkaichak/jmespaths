@@ -5,10 +5,10 @@ import string
 import threading
 from tests import unittest, OrderedDict
 
-from jmespath import parser
-from jmespath import visitor
-from jmespath import ast
-from jmespath import exceptions
+from jmespaths import parser
+from jmespaths import visitor
+from jmespaths import ast
+from jmespaths import exceptions
 
 
 class TestParser(unittest.TestCase):

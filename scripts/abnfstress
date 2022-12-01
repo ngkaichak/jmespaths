@@ -9,8 +9,8 @@ Make sure abnfgen is installed::
 import argparse
 import tempfile
 import subprocess
-import jmespath
-from jmespath import exceptions
+import jmespaths
+from jmespaths import exceptions
 
 # Add any additional args you want to control
 # abnfgen.
@@ -123,7 +123,7 @@ def stress(args):
             output = subprocess.check_output(['abnfgen'] + ARGS + [f.name])
             output = output.decode('utf-8')
             try:
-                parsed = jmespath.compile(output)
+                parsed = jmespaths.compile(output)
             # abnfgen can generate expressions that contain
             # unknown functions.  This is ok, because the
             # grammar doesn't enforce the known functions.

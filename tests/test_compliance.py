@@ -5,7 +5,7 @@ from tests import json
 
 import pytest
 
-from jmespath.visitor import Options
+from jmespaths.visitor import Options
 
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -68,9 +68,9 @@ def load_cases(full_path):
     _compliance_tests('result')
 )
 def test_expression(given, expression, expected, filename):
-    import jmespath.parser
+    import jmespaths.parser
     try:
-        parsed = jmespath.compile(expression)
+        parsed = jmespaths.compile(expression)
     except ValueError as e:
         raise AssertionError(
             'jmespath expression failed to compile: "%s", error: %s"' %
@@ -92,12 +92,12 @@ def test_expression(given, expression, expected, filename):
     _compliance_tests('error')
 )
 def test_error_expression(given, expression, error, filename):
-    import jmespath.parser
+    import jmespaths.parser
     if error not in ('syntax', 'invalid-type',
                      'unknown-function', 'invalid-arity', 'invalid-value'):
         raise RuntimeError("Unknown error type '%s'" % error)
     try:
-        parsed = jmespath.compile(expression)
+        parsed = jmespaths.compile(expression)
         parsed.search(given)
     except ValueError:
         # Test passes, it raised a parse error as expected.

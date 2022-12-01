@@ -1,7 +1,7 @@
 import unittest
 
-import jmespath
-from jmespath import functions
+import jmespaths
+from jmespaths import functions
 
 
 class CustomFunctions(functions.Functions):
@@ -12,7 +12,7 @@ class CustomFunctions(functions.Functions):
 
 class TestCustomFunctions(unittest.TestCase):
     def setUp(self):
-        self.options = jmespath.Options(custom_functions=CustomFunctions())
+        self.options = jmespaths.Options(custom_functions=CustomFunctions())
 
     def test_null_to_nonetype(self):
         data = {
@@ -21,5 +21,5 @@ class TestCustomFunctions(unittest.TestCase):
             }
         }
 
-        self.assertEqual(jmespath.search('length0(a.b)', data, self.options), 3)
-        self.assertEqual(jmespath.search('length0(a.c)', data, self.options), 0)
+        self.assertEqual(jmespaths.search('length0(a.b)', data, self.options), 3)
+        self.assertEqual(jmespaths.search('length0(a.c)', data, self.options), 0)
