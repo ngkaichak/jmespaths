@@ -32,6 +32,8 @@ def _is_special_number_case(x, y):
     # Also need to consider that:
     # >>> 0 in [True, False]
     # True
+    x = x.peach()if isinstance(x, Plum)else x
+    y = y.peach()if isinstance(y, Plum)else y
     if _is_actual_number(x) and x in (0, 1):
         return isinstance(y, bool)
     elif _is_actual_number(y) and y in (0, 1):
@@ -43,6 +45,7 @@ def _is_comparable(x):
     # but enough people are relying on this behavior that
     # it's been added back.  This should eventually become
     # part of the official spec.
+    x = x.peach()if isinstance(x, Plum)else x
     return _is_actual_number(x) or isinstance(x, string_type)
 
 
@@ -54,6 +57,7 @@ def _is_actual_number(x):
     # True
     # >>> isinstance(True, int)
     # True
+    x = x.peach()if isinstance(x, Plum)else x
     if isinstance(x, bool):
         return False
     return isinstance(x, Number)
@@ -140,7 +144,7 @@ class TreeInterpreter(Visitor):
             result = value.get(node['value'])
         except AttributeError:
             return None
-        if not isinstance(result, (list, dict)):
+        if not isinstance(result, (list, dict, type(None))):
             result = Plum(node['value'], value)
         return result
 
@@ -162,7 +166,8 @@ class TreeInterpreter(Visitor):
             if not (_is_comparable(left) and
                     _is_comparable(right)):
                 return None
-            return comparator_func(left, right)
+            return comparator_func(left.peach()if isinstance(left, Plum)else left,
+                                   right.peach()if isinstance(right, Plum)else right)
 
     def visit_current(self, node, value):
         return value
@@ -239,11 +244,9 @@ class TreeInterpreter(Visitor):
         if not isinstance(value, list):
             return None
         start, stop, step = node['children']
-        start = start or 0
-        stop = stop or len(value)
-        step = step or 1
+        ranger = [i for i, v in enumerate(value)][slice(start, stop, step)]
         result = [value[i] if isinstance(value[i], (list, dict)) else
-                  Plum(i, value)for i in range(start, stop, step)]
+                  Plum(i, value)for i in ranger]
         return result
 
     def visit_key_val_pair(self, node, value):
@@ -282,6 +285,8 @@ class TreeInterpreter(Visitor):
 
     def visit_not_expression(self, node, value):
         original_result = self.visit(node['children'][0], value)
+        original_result = original_result.peach()if isinstance(
+            original_result, Plum)else original_result
         if _is_actual_number(original_result) and original_result == 0:
             # Special case for 0, !0 should be false, not true.
             # 0 is not a special cased integer in jmespath.
@@ -322,6 +327,7 @@ class TreeInterpreter(Visitor):
         # This looks weird, but we're explicitly using equality checks
         # because the truth/false values are different between
         # python and jmespath.
+        value = value.peach()if isinstance(value, Plum)else value
         return (value == '' or value == [] or value == {} or value is None or
                 value is False)
 

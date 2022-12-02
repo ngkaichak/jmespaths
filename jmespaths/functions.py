@@ -106,7 +106,8 @@ class Functions(metaclass=FunctionRegistry):
         # The type model for jmespath does not map
         # 1-1 with python types (booleans are considered
         # integers in python for example).
-        actual_typename = type(current).__name__
+        actual_typename = type(current.peach() if isinstance(
+            current, Plum) else current).__name__
         if actual_typename not in allowed_types:
             raise exceptions.JMESPathTypeError(
                 function_name, current,
@@ -139,7 +140,8 @@ class Functions(metaclass=FunctionRegistry):
             # we need to validate.
             allowed_subtypes = allowed_subtypes[0]
             for element in current:
-                actual_typename = type(element).__name__
+                actual_typename = type(element.peach() if isinstance(
+                    element, Plum) else element).__name__
                 if actual_typename not in allowed_subtypes:
                     raise exceptions.JMESPathTypeError(
                         function_name, element, actual_typename, types)
@@ -156,17 +158,20 @@ class Functions(metaclass=FunctionRegistry):
                 raise exceptions.JMESPathTypeError(
                     function_name, current[0], first, types)
             for element in current:
-                actual_typename = type(element).__name__
+                actual_typename = type(element.peach() if isinstance(
+                    element, Plum) else element).__name__
                 if actual_typename not in allowed:
                     raise exceptions.JMESPathTypeError(
                         function_name, element, actual_typename, types)
 
     @signature({'types': ['number']})
     def _func_abs(self, arg):
+        arg = arg.peach() if isinstance(arg, Plum) else arg
         return abs(arg)
 
     @signature({'types': ['array-number']})
     def _func_avg(self, arg):
+        arg = arg.peach() if isinstance(arg, Plum) else arg
         if arg:
             return sum(arg) / float(len(arg))
         else:
@@ -180,33 +185,34 @@ class Functions(metaclass=FunctionRegistry):
 
     @signature({'types': []})
     def _func_to_array(self, arg):
-        if isinstance(arg, list):
+        if isinstance(arg.peach() if isinstance(arg, Plum) else arg, list):
             return arg
         else:
             return [arg]
 
     @signature({'types': []})
     def _func_to_string(self, arg):
-        if isinstance(arg, STRING_TYPE):
+        if isinstance(arg.peach() if isinstance(arg, Plum) else arg, STRING_TYPE):
             return arg
         else:
-            return json.dumps(arg, separators=(',', ':'),
+            return json.dumps(arg.peach() if isinstance(arg, Plum) else arg,
+                              separators=(',', ':'),
                               default=str)
 
     @signature({'types': []})
     def _func_to_number(self, arg):
-        if isinstance(arg, (list, dict, bool)):
+        if isinstance(arg.peach() if isinstance(arg, Plum) else arg, (list, dict, bool)):
             return None
         elif arg is None:
             return None
-        elif isinstance(arg, (int, float)):
+        elif isinstance(arg.peach() if isinstance(arg, Plum) else arg, (int, float)):
             return arg
         else:
             try:
-                return int(arg)
+                return int(arg.peach() if isinstance(arg, Plum) else arg)
             except ValueError:
                 try:
-                    return float(arg)
+                    return float(arg.peach() if isinstance(arg, Plum) else arg)
                 except ValueError:
                     return None
 
@@ -216,14 +222,16 @@ class Functions(metaclass=FunctionRegistry):
 
     @signature({'types': ['string', 'array', 'object']})
     def _func_length(self, arg):
-        return len(arg)
+        return len(arg.peach() if isinstance(arg, Plum) else arg)
 
     @signature({'types': ['string']}, {'types': ['string']})
     def _func_ends_with(self, search, suffix):
+        search = search.peach() if isinstance(search, Plum) else search
         return search.endswith(suffix)
 
     @signature({'types': ['string']}, {'types': ['string']})
     def _func_starts_with(self, search, suffix):
+        search = search.peach() if isinstance(search, Plum) else search
         return search.startswith(suffix)
 
     @signature({'types': ['array', 'string']})
@@ -235,11 +243,11 @@ class Functions(metaclass=FunctionRegistry):
 
     @signature({"types": ['number']})
     def _func_ceil(self, arg):
-        return math.ceil(arg)
+        return math.ceil(arg.peach() if isinstance(arg, Plum)else arg)
 
     @signature({"types": ['number']})
     def _func_floor(self, arg):
-        return math.floor(arg)
+        return math.floor(arg.peach() if isinstance(arg, Plum)else arg)
 
     @signature({"types": ['string']}, {"types": ['array-string']})
     def _func_join(self, separator, array):
@@ -279,6 +287,7 @@ class Functions(metaclass=FunctionRegistry):
 
     @signature({"types": ['array-number']})
     def _func_sum(self, arg):
+        arg = [a.peach() if isinstance(a, Plum)else a for a in arg]
         return sum(arg)
 
     @signature({"types": ['object']})
@@ -316,8 +325,9 @@ class Functions(metaclass=FunctionRegistry):
         # either a string of a number.  We then create a key function
         # that validates that type, which requires that remaining array
         # elements resolve to the same type as the first element.
+        result = expref.visit(expref.expression, array[0])
         required_type = self._convert_to_jmespath_type(
-            type(expref.visit(expref.expression, array[0])).__name__)
+            type(result.peach() if isinstance(result, Plum)else result).__name__)
         if required_type not in ['number', 'string']:
             raise exceptions.JMESPathTypeError(
                 'sort_by', array[0], required_type, ['string', 'number'])
