@@ -141,12 +141,10 @@ class TreeInterpreter(Visitor):
 
     def visit_field(self, node, value):
         try:
-            result = value.get(node['value'])
+            if value.get(node['value']):
+                return Plum(node['value'], value)
         except AttributeError:
             return None
-        if not isinstance(result, (list, dict, type(None))):
-            result = Plum(node['value'], value)
-        return result
 
     def visit_comparator(self, node, value):
         # Common case: comparator is == or !=
