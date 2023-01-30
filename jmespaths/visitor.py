@@ -141,10 +141,10 @@ class TreeInterpreter(Visitor):
 
     def visit_field(self, node, value):
         try:
-            if value.get(node['value']):
-                return Plum(node['value'], value)
+            result = value.get(node['value'])
         except AttributeError:
             return None
+        return result if result is None else Plum(node['value'], value)
 
     def visit_comparator(self, node, value):
         # Common case: comparator is == or !=
@@ -190,10 +190,7 @@ class TreeInterpreter(Visitor):
             if self._is_true(self.visit(comparator_node, element)):
                 current = self.visit(node['children'][1], element)
                 if current is not None:
-                    if not isinstance(current, (list, dict, Plum)):
-                        collected.append(Plum(i, base))
-                    else:
-                        collected.append(current)
+                    collected.append(current)
         return collected
 
     def visit_flatten(self, node, value):

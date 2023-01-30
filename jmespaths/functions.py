@@ -149,7 +149,8 @@ class Functions(metaclass=FunctionRegistry):
             # Dynamic type validation.  Based on the first
             # type we see, we validate that the remaining types
             # match.
-            first = type(current[0]).__name__
+            first = type(current[0].peach()if isinstance(
+                current[0], Plum)else current[0]).__name__
             for subtypes in allowed_subtypes:
                 if first in subtypes:
                     allowed = subtypes
@@ -218,7 +219,7 @@ class Functions(metaclass=FunctionRegistry):
 
     @signature({'types': ['array', 'string']}, {'types': []})
     def _func_contains(self, subject, search):
-        return search in subject
+        return search in (subject.peach()if isinstance(subject, Plum)else subject)
 
     @signature({'types': ['string', 'array', 'object']})
     def _func_length(self, arg):
@@ -251,7 +252,7 @@ class Functions(metaclass=FunctionRegistry):
 
     @signature({"types": ['string']}, {"types": ['array-string']})
     def _func_join(self, separator, array):
-        return separator.join(array)
+        return separator.join(array.peach() if isinstance(array, Plum)else array)
 
     @signature({'types': ['expref']}, {'types': ['array']})
     def _func_map(self, expref, arg):
@@ -263,7 +264,7 @@ class Functions(metaclass=FunctionRegistry):
     @signature({"types": ['array-number', 'array-string']})
     def _func_max(self, arg):
         if arg:
-            return max(arg)
+            return max(arg.peach()if isinstance(arg, Plum)else arg)
         else:
             return None
 
@@ -277,13 +278,13 @@ class Functions(metaclass=FunctionRegistry):
     @signature({"types": ['array-number', 'array-string']})
     def _func_min(self, arg):
         if arg:
-            return min(arg)
+            return min(arg.peach()if isinstance(arg, Plum)else arg)
         else:
             return None
 
     @signature({"types": ['array-string', 'array-number']})
     def _func_sort(self, arg):
-        return list(sorted(arg))
+        return list(sorted(arg.peach()if isinstance(arg, Plum)else arg))
 
     @signature({"types": ['array-number']})
     def _func_sum(self, arg):
